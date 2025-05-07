@@ -8,7 +8,7 @@ import Text.Regex.TDFA
 -- x x
 
 {-
-How do you parse an expression like this?
+How do you parse a function application expression like this?
 
   fun y -> y fun x -> x 10
 
@@ -16,11 +16,17 @@ How do you parse an expression like this?
 
   (fun y -> y (fun x -> x 10))
 
-The algorithm is that you first parse all function applications;
-the application parser attempts to parse the left-hand side, with
-a parser that doesn't parse function applications. The right-hand
-side is recursively parsed with the first parsing function.
+The algorithm is as follows:
 
+- Split the parser in two; one that parses function application (AP),
+  and one that parses other terms (TP).
+- AP calls TP on the input; if there are still tokens left, treat
+  those as the RHS in a function application term, otherwise return
+- Since the RHS might contain further applications, recurse on the
+  remaining tokens using AP
+
+Remember that since we're dealing with a "flat" sequence of
+tokens, the first token(s) will *always* be an operand!
 -}
 
 data Term
