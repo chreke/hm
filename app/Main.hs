@@ -3,10 +3,6 @@ module Main where
 import Text.Regex.TDFA
 -- import Debug.Trace
 
--- fun x -> x
--- x
--- x x
-
 {-
 How do you parse a function application expression like this?
 
@@ -18,12 +14,12 @@ How do you parse a function application expression like this?
 
 The algorithm is as follows:
 
-- Split the parser in two; one that parses function application (AP),
-  and one that parses other terms (TP).
-- AP calls TP on the input; if there are still tokens left, treat
+- Split the parser in two; one that parses function application (parseApp),
+  and one that parses other terms (parseTerm).
+- parseApp calls parseTerm on the input; if there are still tokens left, treat
   those as the RHS in a function application term, otherwise return
 - Since the RHS might contain further applications, recurse on the
-  remaining tokens using AP
+  remaining tokens using parseApp
 
 Remember that since we're dealing with a "flat" sequence of
 tokens, the first token(s) will *always* be an operand!
@@ -61,8 +57,6 @@ parseApp tokens =
         do
           (rhs, rest') <- parseApp rest
           Right (App lhs rhs, rest')
-    -- (rhs, rest') <- parse rest
-    -- Right (App lhs rhs, rest')
 
 stringToToken :: String -> Maybe Token
 stringToToken "fun" = Just Fn
