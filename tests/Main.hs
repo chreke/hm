@@ -19,8 +19,8 @@ main = hspec $ do
       compile "f x y" `shouldBe` Right (App (App (Var "f") (Var "x")) (Var "y"))
       
     it "should parse complex expression" $ do
-      compile "fun y -> y fun x -> x 10" `shouldBe` 
-        Right (Fun "y" (App (Var "y") (Fun "x" (App (Var "x") (Var "10")))))
+      compile "fun y -> y fun x -> x z" `shouldBe`
+        Right (App (App (Fun "y" (Var "y")) (Fun "x" (Var "x"))) (Var "z"))
       
     it "should fail on invalid input" $ do
       case compile "fun ->" of

@@ -47,16 +47,13 @@ parse (Fn : Symbol x : Arrow : rest) =
     Right (Fun x body, rest')
 parse tokens = Left $ "Syntax error; unexpected: " ++ show tokens
 
-parseApp :: [Token] -> Either String (Term, [Token])
-parseApp tokens =
+parseApp :: Term -> [Token] -> Either String (Term, [Token])
+parseApp lhs [] = Right (lhs, [])
+parseApp lhs tokens =
   do
-    (lhs, rest) <- parse tokens
-    case rest of
-      [] -> Right (lhs, [])
-      _ ->
-        do
-          (rhs, rest') <- parseApp rest
-          Right (App lhs rhs, rest')
+    (rhs, rest) <- parse tokens
+    let lhs' = App lhs rhs
+    parseApp lhs' rest
 
 stringToToken :: String -> Maybe Token
 stringToToken "fun" = Just Fn
@@ -80,7 +77,8 @@ compile :: String -> Either String Term
 compile input =
   do
     tokens <- scan $ getAllTextMatches (input =~ scanRegex)
-    parseApp tokens
+    (lhs, rest) <- parse tokens
+    parseApp lhs rest
     >>= \(t, rest) -> 
       case rest of
         [] -> Right t
