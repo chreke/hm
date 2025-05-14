@@ -53,6 +53,29 @@ extra-doc-files:    CHANGELOG.md
 common warnings
     ghc-options: -Wall
 
+library
+    -- Import common warning flags.
+    import:           warnings
+
+    -- Modules exported by the library.
+    exposed-modules:  Parser
+
+    -- Modules included in this library but not exported.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:    base ^>=4.17.2.1,
+                      regex-tdfa ^>=1.3.2
+
+    -- Directories containing source files.
+    hs-source-dirs:   src
+
+    -- Base language which the package is written in.
+    default-language: Haskell2010
+
 executable hm
     -- Import common warning flags.
     import:           warnings
@@ -68,10 +91,21 @@ executable hm
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.2.1,
-                      regex-tdfa ^>= 1.3.2
+                      hm
 
     -- Directories containing source files.
     hs-source-dirs:   app
 
     -- Base language which the package is written in.
+    default-language: Haskell2010
+
+test-suite tests
+    type:             exitcode-stdio-1.0
+    main-is:          Main.hs
+    build-depends:
+        base ^>=4.17.2.1,
+        hspec ^>=2.11.9,
+        hm
+    ghc-options:      -Wall
+    hs-source-dirs:   tests
     default-language: Haskell2010
