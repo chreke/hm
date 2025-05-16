@@ -38,20 +38,19 @@ data Token
   | Whitespace
   deriving (Show)
 
-parse :: [Token] -> Either String (Term, [Token])
-parse (Symbol x : rest) =
+parseExp :: [Token] -> Either String (Term, [Token])
   Right (Var x, rest)
-parse (Fn : Symbol x : Arrow : rest) =
+parseExp (Fn : Symbol x : Arrow : rest) =
   do
-    (body, rest') <- parse rest
+    (body, rest') <- parseExp rest
     Right (Fun x body, rest')
-parse tokens = Left $ "Syntax error; unexpected: " ++ show tokens
+parseExp tokens = Left $ "Syntax error; unexpected: " ++ show tokens
 
 parseApp :: Term -> [Token] -> Either String (Term, [Token])
 parseApp lhs [] = Right (lhs, [])
 parseApp lhs tokens =
   do
-    (rhs, rest) <- parse tokens
+    (rhs, rest) <- parseExp tokens
     let lhs' = App lhs rhs
     parseApp lhs' rest
 
@@ -75,12 +74,17 @@ scan (lexeme : rest) =
 scanRegex :: String
 scanRegex = "fun|->|[a-zA-Z_]+|[:space:]+"
 
+parse :: [Token] -> Either String (Term, [Token])
+parse tokens =
+  do
+    (lhs, rest) <- parseExp tokens
+    parseApp lhs rest
+
 compile :: String -> Either String Term
 compile input =
   do
     tokens <- scan $ getAllTextMatches (input =~ scanRegex)
-    (lhs, rest) <- parse tokens
-    parseApp lhs rest
+    parse tokens
     >>= \(t, rest) -> 
       case rest of
         [] -> Right t
