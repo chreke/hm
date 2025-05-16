@@ -56,11 +56,13 @@ parseApp lhs tokens =
     parseApp lhs' rest
 
 stringToToken :: String -> Maybe Token
-stringToToken "fun" = Just Fn
-stringToToken "->" = Just Arrow
-stringToToken str | str =~ "[a-zA-Z_]+" = Just $ Symbol str
-stringToToken str | str =~ "[:space:]+" = Just Whitespace
-stringToToken _ = Nothing
+stringToToken string =
+  case string of
+    "fun" -> Just Fn
+    "->" -> Just Arrow
+    str | str =~ "[a-zA-Z_]+" -> Just $ Symbol str
+    str | str =~ "[:space:]+" -> Just Whitespace
+    _ -> Nothing
 
 scan :: [String] -> Either String [Token]
 scan [] = Right []
