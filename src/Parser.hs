@@ -42,7 +42,7 @@ parseExp :: [Token] -> Either String (Term, [Token])
   Right (Var x, rest)
 parseExp (Fn : Symbol x : Arrow : rest) =
   do
-    (body, rest') <- parseExp rest
+    (body, rest') <- parse rest
     Right (Fun x body, rest')
 parseExp tokens = Left $ "Syntax error; unexpected: " ++ show tokens
 
